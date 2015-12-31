@@ -35,8 +35,9 @@ include("include/database.php");
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
+ <script type="text/javascript" src="js/jquery.battatech.excelexport.js"></script>
 	<script type="text/javascript">
-	
+ 
 	function confirmSubmit()
 {
 var agree=confirm("Are you sure to Delete this Entry?");
@@ -54,7 +55,8 @@ else
         padding: 0 1em;
     }
 	 
-   
+ 
+ 
     .panel{
         float: left;
         background: #F7F7F7 none repeat scroll 0% 0%;
@@ -84,14 +86,13 @@ else
 
 </head>
 
+
 <body>
 <div id="container">
 <div id="sub-header">
     <?php
 	include("header.php");
-	 
-		 $csv_hdr ="Company Name,Company Abbr,Client Id,ContactPerson,MobileNo,Email1";
-		 $csv_output="";
+	include("clientexport.php");
 		 ?>
     	 <br>         
          
@@ -100,7 +101,10 @@ else
                 <td class="info">Clients Details</td>
 			           </tr>
                 </table>
-				<br><br>      
+				<br><br>   
+				<div>
+        <button id="btnExport" style="background-color:#00CCFF; height:30px; font-family:'Times New Roman', Times, serif; font-size:15px;">Export table to Excel</button>
+    </div>   
 <?php
   $c_qry_f="select * from clients ";
   $c_res_f=mysql_query($c_qry_f);
@@ -128,20 +132,16 @@ else
 		
         echo "<td >";
 		echo $c_row['comp_name'];
-		 $csv_output .=  $c_row['comp_name'].',';
 		echo "</td>";
 		echo "<td >";
 		echo $c_row['cmp_txt'];
-		$csv_output .=  $c_row['cmp_txt'].',';
 		echo "</td>";
 		echo "<td >";
 		echo $c_row['c_unq_code'];
-		$csv_output .=  $c_row['c_unq_code'].',';
 		echo "</td>";
 		
         echo "<td >";
 		echo $c_row['c_per'];
-		$csv_output .=  $c_row['c_per'].',';
 		echo "</td>";
 				
 				
@@ -149,12 +149,10 @@ else
 		echo "<td>";
 	    	if(!empty($c_row['c_mo']))
 		    echo $c_row['c_mo'];
-			$csv_output .=  $c_row['c_mo'].',';
 		echo "</td>";
 				
 		echo "<td>";
 		echo $c_row['c_email1'];
-		$csv_output .=  $c_row['c_email1']."\n";
 		echo "</td>";		
  echo "<td >";		
         echo "<a href='?c_id1=$c_row[0]' onclick='return confirmSubmit()'><img src='imgs1/green_delete.png' height='20px;'/></a>&nbsp;<a href='updateclients.php?c_id2=$c_row[0]'><img src='imgs1/updt.png' height='20px;'/></a>
@@ -166,11 +164,6 @@ else
 
     </tbody>
 </table>
-<form name="export" action="export.php" method="post">
-    <input type="submit" value="Export table to Excel">
-    <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-    <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-</form>
 </div>
 </div>
 <script src="dist/tablefilter/tablefilter.js"></script>
@@ -192,6 +185,7 @@ else
         status_bar_target_id: 'lblMsg',
         status_bar_css_class: 'myStatus',
         no_results_message: true,
+		linked_filters: true,
         col_0: 'select',
         col_1: 'select',
         col_2: 'select',

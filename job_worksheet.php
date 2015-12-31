@@ -17,6 +17,7 @@ include("include/database.php");
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
+ <script type="text/javascript" src="js/jquery.battatech.excelexport.js"></script>
 	<script type="text/javascript">
 	
 	function confirmSubmit()
@@ -72,11 +73,18 @@ else
 <div id="sub-header">	
     <?php
 	include("header.php");
-	$csv_hdr ="Customer Name,Final Destination,Product ,QTY.,FCL,Tentatively Date,ETD,ETA,SHIPPING LINE,B/L NO.,OCEAN FRIGHT,PI NO.,PRICE(USD),AMOUNT,ACK,INVOICE NO.,DHL AWB NO.,PMT DUE DT,PMT RCV DT,TERMS,SHIPMENT MONTH";
-		 $csv_output="";
+	include("worksheetxport.php");
 	?>
-    	
-        <br />                
+    	<br>
+		 <table class="emp_tab">
+                <tr class="search_res" >
+                <td class="info">Job Worksheet Details</td>
+			           </tr>
+                </table>
+       <br>
+				<div>
+        <button id="btnExport" style="background-color:#00CCFF; height:30px; font-family:'Times New Roman', Times, serif; font-size:15px;">Export table to Excel</button>
+    </div>            
                 
 				
 				<?php
@@ -88,7 +96,7 @@ else
          <table id="demo3" style="margin-left:-80px;">
                  <thead>
 				 <tr>
-		<th align="center">Sr No.</th>
+		<th align="center">SrNo.</th>
         <th align="center">Customer Name</th>		 	
 		<th align="center">Final Destination</th>
 		<th align="center">Product </th>	
@@ -98,16 +106,16 @@ else
 		<th align="center">ETD</th>
 		<th align="center">ETA</th>
 		<th align="center">SHIPPING LINE</th>
-		<th align="center">B/L NO.</th>
+		<th align="center">B/L_NO.</th>
 		<th align="center">OCEAN FRIGHT</th>
 		<th align="center">PI NO.</th>
-		<th align="center">PRICE(USD)</th>
+		<th align="center">PRICE (USD)</th>
 		<th align="center">AMOUNT</th>
 		<th align="center">ACK</th>
 		<th align="center">INVOICE NO.</th>
 		<th align="center">DHL AWB NO.</th>
-		<th align="center">PMT DUE DT</th>
-		<th align="center">PMT RCV DT</th>
+		<th align="center">PMT_DUE_DT</th>
+		<th align="center">PMT_RCV_DT</th>
 		<th align="center">TERMS</th>
 		<th align="center">SHIPMENT MONTH</th>
 		
@@ -132,101 +140,80 @@ else
 		echo "</td>";
         echo "<td >";
 		echo $c_row['c_indent_of'];
-		$csv_output .=  $c_row['c_indent_of'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['fd'];
-		$csv_output .=  $c_row['fd'].',';
 		echo "</td>";     
 		echo "<td>";
 		$grade=explode('ZANCARB',$c_row['grade']);
 		echo $grade[1];
-		$csv_output .=  $c_row['grade'].',';
 		echo "</td>";
 		echo "<td>";
 				if(!empty($c_row['qnt']))
 
 		echo $c_row['qnt'];
-		$csv_output .=  $c_row['qnt'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['fcl'];
-		$csv_output .=  $c_row['fcl'].',';
 		echo "</td>"; 
 		echo "<td>";
 		echo $c_row['t_s_date'];
-		$csv_output .=  $c_row['t_s_date'].',';
 		echo "</td>";
 		echo "<td>";
 		if(!strtotime($etd) == '')
 			{	echo $c_row['etd'];
-				$csv_output .=  $c_row['etd'].',';
 			}	
 		echo "</td>";
 		echo "<td>";
 		if (!strtotime($eta) == '')		
 			{	echo $c_row['eta'];
-				$csv_output .=  $c_row['eta'].',';
 			}	
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['ship_line'];
-		$csv_output .=  $c_row['ship_line'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['bl_no'];
-		$csv_output .=  $c_row['bl_no'].',';
 		echo "</td>";
 		echo "<td>";
 		if(!empty($c_row['ocean_frght']))
 		echo $c_row['ocean_frght'];
-		$csv_output .=  $c_row['ocean_frght'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['pi_no'];
-		$csv_output .=  $c_row['pi_no'].',';
 		echo "</td>";
 		echo "<td>";
 				if(!empty($c_row['unt_pr']))
 		echo $c_row['unt_pr'];
-		$csv_output .=  $c_row['unt_pr'].',';
 		echo "</td>";
 		echo "<td>";
 		if(!empty($c_row['tot_val']))		
 		echo $c_row['tot_val'];
-		$csv_output .=  $c_row['tot_val'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['ack'];
-		$csv_output .=  $c_row['ack'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['invoice'];
-		$csv_output .=  $c_row['invoice'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['dhl_awb_no'];
-		$csv_output .=  $c_row['dhl_awb_no'].',';
 		echo "</td>";
 		echo "<td>";
 		if(!strtotime($due) == '')
 		{		echo $c_row['payment_due'];
-				$csv_output .=  $c_row['payment_due'].',';
 		}		
 		echo "</td>";
 		echo "<td>";
 		 if(!strtotime($received) == '')
 			{	echo $c_row['payment_recieve'];	
-				$csv_output .=  $c_row['payment_recieve'].',';		
 			}	
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['pay_term'];
-		$csv_output .=  $c_row['pay_term'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['ship_month'];
-		$csv_output .=  $c_row['ship_month']."\n";
 		echo "</td>";
 		 
 		echo "</tr>";
@@ -236,13 +223,7 @@ else
         
       </tbody>  
                 </table><br>
-               
-  <form name="export" action="export.php" method="post">
-    <input type="submit" value="Export table to Excel">
-    <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-    <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-</form>              
-               
+   
     </div>
     </div>
 	<script src="dist/tablefilter/tablefilter.js"></script>
@@ -291,7 +272,16 @@ else
         col_19: '',
         col_20: 'select',
 		col_21: 'select',
-		 themes: [{ name: 'skyblue' }],		 
+		col_width:['50px', '120px', '120px',
+            '40px', '40px', '30px',
+            '80px', '80px', '80px',
+			'120px', '120px', '40px',
+			'120px', '60px', '80px',
+			'40px', '120px', '120px',
+			'80px', '80px', '100px',
+			'100px'],
+ 		linked_filters: true, 
+		themes: [{ name: 'skyblue' }],		 
         extensions:[{
             name: 'sort',
 			types: [

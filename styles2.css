@@ -1026,7 +1026,17 @@ div#footer-links p {
 	color:#000;
 	border:1px solid #999;
 	 background-color: #d1e5fe;
-	 width:120px;
+	 width:110px;
+}
+.des_r_grd
+{
+	height:25px;
+	background-color:#FFF;
+	font-size:12px;
+	color:#000;
+	border:1px solid #999;
+	 background-color: #d1e5fe;
+	 width:85px;
 }
 .des_r_num
 {
@@ -1036,7 +1046,7 @@ div#footer-links p {
 	color:#000;
 	border:1px solid #999;
 	 background-color: #d1e5fe;
-	 width:20px;
+	 width:30px;
 
 }
 .des_r_numt
@@ -1047,7 +1057,7 @@ div#footer-links p {
 	color:#000;
 	border:1px solid #999;
 	 background-color: #d1e5fe;
-	 width:40px;
+	 width:60px;
 }
 .des_q
 {

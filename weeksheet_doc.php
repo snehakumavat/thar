@@ -6,6 +6,8 @@ include("session.php");
 
  $cnt=$_POST['cnt'];
  $res=count($cnt);
+ $rm=$_POST['remarkt'];
+ $rmt=count($rm);
 ?>
 <html>
 <head>
@@ -114,7 +116,7 @@ border-right: 1px solid #FFFFFF;
 }
 .sheet
 {
-	width:720px;
+	width:820px;
 	margin-top:45px;
 	margin-left:40px;
     
@@ -132,7 +134,6 @@ border-right: 1px solid #FFFFFF;
 
  <br>
 <br>
-<font face="Calibri" size="12px;">
  
 
 <div class="quotation"><center>Weekly Updated Sheet As On <?php echo date('d/m/Y'); ?></center></div>
@@ -168,11 +169,12 @@ border-right: 1px solid #FFFFFF;
 				<td width="150">Remark</td>
 </tr>
  <?php
-
 for($c=0; $c<$res;$c++)
 {
 $count+=1;
-	  echo "<tr>";
+if($_POST['job'][$c]==1)
+{
+	  echo "<tr  align='center' style='text-decoration:line-through;'>";
 		echo "<td>";
 		echo $count;
 	echo "</td>";
@@ -216,11 +218,62 @@ $count+=1;
 		echo "</tr>";
 		++$cnt;
 }
+else
+{
+
+	  echo "<tr>";
+		echo "<td>";
+		echo $count;
+	echo "</td>";
+        echo "<td >";
+		echo $_POST['cmp'][$c];
+		echo "</td>"; 		
+     	echo "<td>";
+		echo $_POST['fd'][$c];
+		echo "</td>";     
+		echo "<td>";
+		echo $_POST['grade'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo $_POST['qnt'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo $_POST['payterm'][$c];
+		echo "</td>"; 
+		echo "<td>";
+		echo $_POST['fcl'][$c];
+		echo "</td>";			
+        echo "<td>";
+		echo $_POST['etd'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo $_POST['eta'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo $_POST['vnm'][$c];
+		echo "</td>"; 
+		echo "<td>";
+		echo $_POST['sline'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo $_POST['inv'][$c];
+		echo "</td>";
+		echo "<td>";
+		echo nl2br($_POST['remark'][$c]);
+		echo "</td>";
+
+		echo "</tr>";
+		++$cnt;
+
+}
+}
  
 ?> 
   
   
 </table >
+</div>
+
 <div style="page-break-after:always;"></div>
 <div>PETROTECH GROUP<BR>
 List of Outstanding -<?php echo date('d/m/Y');?>
@@ -269,28 +322,37 @@ List of Outstanding -<?php echo date('d/m/Y');?>
 				<td width="80">Amount(USD)</td>
 
 				<td colspan="2" width="100">Payment Received(USD)</td>
+				<td width="100"> Remark</td>
 </tr>
 <?php
 $p=$_REQUEST['cmp'][0];
-echo $qry="select * from client_po c ,sub_po s where c.po_id=s.po_id  AND c.c_indent_of='$p' order by c.po_id";
+$qry="select * from client_po c ,sub_po s where c.po_id=s.po_id  AND c.c_indent_of='$p'  order by S.payment_recieve  DESC";
 $res=mysql_query($qry);
-$row=1;
+$row=1;$rcv=1;$c=0;
 while($c_row=mysql_fetch_array($res))
 {
 $received = str_replace('/', '-', $c_row['payment_recieve']);
 $due = str_replace('/', '-', $c_row['payment_due']);
-	  echo "<tr>";
-  if($row==1){
-       echo "<td >";
-		echo $c_row['c_indent_of'];
-		echo "</td>"; 		
-		}
- else{
-		 echo "<td >";
-		
-		echo "</td>"; 		
-		
- }
+if($c_row['job']!=1)        
+{
+if($received!='' && $rcv>3)
+{}
+else{
+ 	  if($c_row['job']==1)
+        echo "<tr  align='center' style='text-decoration:line-through'>";
+		else
+	  echo "<tr class='pagit'>";
+  			if($row==1){
+				   echo "<td >";
+					echo $c_row['c_indent_of'];
+					echo "</td>"; 		
+					}
+			 else{
+					 echo "<td>";
+					echo "</td>"; 		
+			 	}
+			if($c<$rmt)	
+			{
      	echo "<td>";
 		echo $c_row['etd'];
 		echo "</td>";     
@@ -317,10 +379,11 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "<td bgcolor='red' >";
 		//echo 'USD '.$c_row['pay_amt'];
 		echo "</td>";
+		echo "<td>";		
+		echo nl2br($_POST['remarkt'][$c]);
+		echo "</td>";
 	   }
-	   else{
-	   
-		
+	   else{		
 	  if(strtotime($received)!='')
 	   {
 	   echo "<td bgcolor='green'>";
@@ -338,6 +401,10 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "<td  bgcolor='green' >";
 		echo 'USD '.$c_row['pay_amt'];
 		echo "</td>";
+		echo "<td>";		
+		echo nl2br($_POST['remarkt'][$c]);
+		echo "</td>";
+		++$rcv;
 	   }
 	   else
 	   {
@@ -356,12 +423,18 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "<td >";
 		echo $c_row['pay_amt'];
 		echo "</td>";
-		echo "</tr>";
 		
-		}
+		echo "<td>";		
+		echo nl2br($_POST['remarkt'][$c]);
+		echo "</td>";
+		echo "</tr>";
+		 
+		} //else loop close of receive
 		}++$row;
-}
- 
+		++$c;}// close loop of remark view 
+} // end of while loop
+ } //end of recieve date
+ } //end of job cheking
 ?>
   
 </table>
@@ -374,7 +447,7 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 </html>
 
 <?php
-/*$htmlcontent=ob_get_clean();
+$htmlcontent=ob_get_clean();
 
 include("dompdf/dompdf_config.inc.php");
 
@@ -391,5 +464,5 @@ include("dompdf/dompdf_config.inc.php");
 
   $dompdf->stream($filename, array("Attachment" => false));	
   
-  exit(0);*/
+  exit(0);
 ?>

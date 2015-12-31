@@ -386,11 +386,11 @@ $query3=mysql_query("SELECT * FROM clients WHERE comp_name LIKE '%$name%'");
                 <td width="" >
                  <select name="grade[]" class="des_q" id="" style="width:80px;" tabindex="4" >
 				 <option value="No Grade">Grade</option>
-				 <option value="1T">1T</option>
-				 <option value="2T">2T</option>
-				 <option value="2TS">2TS</option>
-				 <option value="ZB1">ZB1</option>								 
-				 <option value="ZB2">ZB2</option>
+				 <option value="ZANCARB 1T">1T</option>
+				 <option value="ZANCARB 2T">2T</option>
+				 <option value="ZANCARB 2TS">2TS</option>
+				 <option value="ZANCARB ZB1">ZB1</option>								 
+				 <option value="ZANCARB ZB2">ZB2</option>
 				 </select>
                 </td>     
 				<td>

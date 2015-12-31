@@ -1,29 +1,28 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 include("session.php");
 include("include/database.php");
 ?>
 
 <?php
-	if(isset($_REQUEST['po_id1']))
+	if(isset($_REQUEST['c_id1']))
 	{
-		$c_d=$_REQUEST['po_id1'];		
-		$g_gatepas="delete from client_po where po_id='$c_d'";
-		$query1=mysql_query($g_gatepas);
-		$g_des="delete from sub_po where po_id='$c_d'";
-		$query2=mysql_query($g_des);
-		
-		if($query2)
+		$c_d=$_REQUEST['c_id1'];		
+		$c_del="delete from clients where c_id='$c_d'";
+		$c_dres=mysql_query($c_del);
+		if($c_dres)
 		{
-			header("location:viewpo.php?res=suc");
+			header("location:clients.php?res=suc");
 		}
 		else
 		{
-			header("location:viewpo.php?res=er1");
+			header("location:clients.php?res=er1");
 		}
 		
 	}
 ?>
+
+
 
 <html>
 <head>
@@ -36,9 +35,6 @@ include("include/database.php");
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
- 
-<script type="text/javascript" src="js/jquery.battatech.excelexport.js"></script>
-
 	<script type="text/javascript">
 	
 	function confirmSubmit()
@@ -48,8 +44,9 @@ if (agree)
 	return true ;
 else
 	return false ;
-}	</script>
- <link rel="stylesheet" type="text/css" href="dist/tablefilter/style/tablefilter.css" />
+}
+</script>
+   <link rel="stylesheet" type="text/css" href="dist/tablefilter/style/tablefilter.css" />
 <style type="text/css">
     body{
         font-family: Helvetica, arial, nimbussansl, liberationsans, freesans,
@@ -82,7 +79,6 @@ else
             width:auto; display:block;
         }
     </style>
-	
 
 
 
@@ -90,67 +86,91 @@ else
 
 <body>
 <div id="container">
-<div id="sub-header">	
+<div id="sub-header">
     <?php
 	include("header.php");
-	 include("poexcel.php");
-	?>
-    	
-        <br />                
-                <form action="" method="post" name="search">
-				<table class="emp_tab">
+	 
+		 $csv_hdr ="Company Name,Company Abbr,Client Id,ContactPerson,MobileNo,Email1";
+		 $csv_output="";
+		 ?>
+    	 <br>         
+         
+		 <table class="emp_tab">
                 <tr class="search_res" >
-                <td class="info">purches Order Details</td>
-                    </tr>
+                <td class="info">Clients Details</td>
+			           </tr>
                 </table>
-                </form>
-             <br><br>   
-				<div>
-        <button id="btnExport" style="background-color:#00CCFF; height:30px; font-family:'Times New Roman', Times, serif; font-size:15px;">Export table to Excel</button>
-    </div>      
-            <?php
-			$c_qry_f="select * from client_po";
-	     	$c_res_f=mysql_query($c_qry_f);
-		    ?>
-        <table id="demo4">
-		<thead>
-        <tr >
-        <th align="center">Indent Of</th>
-		<th align="center">Customer Id.</th>	
-        <th align="center"> PT Ref No:</th>        
-        <th align="center">Action</th>
+				<br><br>      
+<?php
+  $c_qry_f="select * from clients ";
+  $c_res_f=mysql_query($c_qry_f);
+		
+?>
+        <table id="demo1">
+		 <thead>
+        <tr>
+        <th align="center">Company Name.</th>
+		<th align="center">Company Abbr</th>
+		<th align="center">Client Id</th>
+		<th align="center">ContactPerson</th> 
+		<th align="center">MobileNo</th>    
+		<th align="center">Email1</th>
+		 <th align='center'>Action</th> 
+        
         </tr>
 </thead>
-<tbody>
+   <tbody>
         <?php
+		 
 		while($c_row=mysql_fetch_array($c_res_f))
 		{
-        echo "<tr align='center'>";
-        echo "<td>";
-		echo $c_row['c_indent_of'];
- 		echo "</td>";
-        
+        echo "<tr align='center' >";
+		
+        echo "<td >";
+		echo $c_row['comp_name'];
+		 $csv_output .=  $c_row['comp_name'].',';
+		echo "</td>";
+		echo "<td >";
+		echo $c_row['cmp_txt'];
+		$csv_output .=  $c_row['cmp_txt'].',';
+		echo "</td>";
+		echo "<td >";
+		echo $c_row['c_unq_code'];
+		$csv_output .=  $c_row['c_unq_code'].',';
+		echo "</td>";
+		
+        echo "<td >";
+		echo $c_row['c_per'];
+		$csv_output .=  $c_row['c_per'].',';
+		echo "</td>";
+				
+				
+		
 		echo "<td>";
-		echo $c_row['c_id'];
- 		echo "</td>";
+	    	if(!empty($c_row['c_mo']))
+		    echo $c_row['c_mo'];
+			$csv_output .=  $c_row['c_mo'].',';
+		echo "</td>";
+				
 		echo "<td>";
-		echo $c_row['pet_ref'];
- 					
-        echo "<td width='100'>";
-		echo "<a href='?po_id1=$c_row[0]' onclick='return confirmSubmit()'><img src='imgs1/green_delete.png' width='16' height='16' /></a>&nbsp;";
-		echo "<a href='po_doc.php?id=$c_row[0]' target='_blank'><img src='imgs1/view.png'/></a>&nbsp;";
-		echo"<a href='updatepo.php?po_id=$c_row[0]'><img src='imgs1/updt.png' width='16' height='16' /></a>&nbsp;";
-
+		echo $c_row['c_email1'];
+		$csv_output .=  $c_row['c_email1']."\n";
+		echo "</td>";		
+ echo "<td >";		
+        echo "<a href='?c_id1=$c_row[0]' onclick='return confirmSubmit()'><img src='imgs1/green_delete.png' height='20px;'/></a>&nbsp;<a href='updateclients.php?c_id2=$c_row[0]'><img src='imgs1/updt.png' height='20px;'/></a>
+		 <a href='clientsview.php?c_id3=$c_row[0]'><img src='imgs1/view.png'  /></a>&nbsp";
 		echo "</td>";
 		echo "</tr>";
 		}
 		?>
-		</tbody>
-		</table>
-   
-   
-    
-	
+
+    </tbody>
+</table>
+<form name="export" action="export.php" method="post">
+    <input type="submit" value="Export table to Excel">
+    <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
+    <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
+</form>
 </div>
 </div>
 <script src="dist/tablefilter/tablefilter.js"></script>
@@ -172,23 +192,21 @@ else
         status_bar_target_id: 'lblMsg',
         status_bar_css_class: 'myStatus',
         no_results_message: true,
-		linked_filters: true,
-
         col_0: 'select',
         col_1: 'select',
         col_2: 'select',
-		col_3:'none',
+		col_6:'none',
 		 themes: [{ name: 'skyblue' }],
         extensions:[{
             name: 'sort',
             types: [
                 'string', 'string', 'string',
-                'none'
+                'string','number', 'string','none'
             ]
         }]
     };
 
-    var tf = new TableFilter('demo4', filtersConfig);
+    var tf = new TableFilter('demo1', filtersConfig);
     tf.init();
 
 </script>
@@ -208,5 +226,7 @@ else
         }
     });
 </script>
+<!-- -->
+
 </body>
 </html>

@@ -18,7 +18,7 @@ include("include/database.php");
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
-
+<script type="text/javascript" src="js/jquery.battatech.excelexport.js"></script>
 <link rel="stylesheet" type="text/css" href="dist/tablefilter/style/tablefilter.css" />
 <style type="text/css">
     body{
@@ -61,8 +61,7 @@ include("include/database.php");
 <div id="sub-header">
      <?php
 	include("header.php");
-	$csv_hdr ="Indent Of,Customer Id,Final Destination,Product,QTY,Tentatively Date,PI NO";
-		 $csv_output="";
+	include("jobexcel.php");
 	?>
     	
         <br>                
@@ -73,6 +72,11 @@ include("include/database.php");
                   </tr>
                 </table>
 				<br><br>
+				
+				 <br><br>   
+				<div>
+        <button id="btnExport" style="background-color:#00CCFF; height:30px; font-family:'Times New Roman', Times, serif; font-size:15px;">Export table to Excel</button>
+    </div>    
           <?php
 		  $c_qry_f="select * from client_po c,sub_po s where c.po_id=s.po_id ";
 	     $c_res_f=mysql_query($c_qry_f);
@@ -102,31 +106,24 @@ include("include/database.php");
 		echo "<tr  align='center'>";
         echo "<td>";
 		echo $c_row['c_indent_of'];
-		$csv_output .=  $c_row['c_indent_of'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['c_id'];
-		$csv_output .=  $c_row['c_id'].',';
 		echo "</td>";       				
 		echo "<td>";
 		echo $c_row['fd'];
-		$csv_output .=  $c_row['fd'].',';
 		echo "</td>";     
 		echo "<td>";
 		echo $c_row['grade'];
-		$csv_output .=  $c_row['grade'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['qnt'];
-		$csv_output .=  $c_row['qnt'].',';
 		echo "</td>";
 		echo "<td>";
 		echo $c_row['t_s_date'];
-		$csv_output .=  $c_row['t_s_date'].',';
 		echo "</td>"; 
 		echo "<td>";
 		echo $c_row['pi_no'];
-		$csv_output .=  $c_row['pi_no']."\n";
 		echo "</td>";
 		echo "<td>";
 			echo "<a href='add_job.php?sub_po_id=$c_row[sub_po_id]'><input type='button' value='Add Job'></a>";
@@ -136,11 +133,7 @@ include("include/database.php");
 		?>
         </tbody>
         </table>
-  <form name="export" action="export.php" method="post">
-    <input type="submit" value="Export table to Excel">
-    <input type="hidden" value="<?php echo $csv_hdr; ?>" name="csv_hdr">
-    <input type="hidden" value="<?php echo $csv_output; ?>" name="csv_output">
-</form>   
+   
    </div>
    </div>             
  <script src="dist/tablefilter/tablefilter.js"></script>
@@ -164,7 +157,8 @@ include("include/database.php");
         status_bar_target_id: 'lblMsg',
         status_bar_css_class: 'myStatus',
         no_results_message: true,
-        col_0: 'select',
+		linked_filters: true,
+		col_0: 'select',
         col_1: 'select',
         col_2: 'select',
 		col_3: 'select',		

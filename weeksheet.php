@@ -188,7 +188,7 @@ $val='';
                
                 <td class="heading" width="114">Customer Name</td>
                 <td class="heading" width="110">Final Destination</td>
-                <td class="heading" width="50">Product  </td>
+                <td class="heading" width="80">Product  </td>
                 <td class="heading" width="34"> QTY.</td>
                 <td class="heading" width="100">Terms</td>
 				<td class="heading" width="30">FCL</td>
@@ -197,7 +197,7 @@ $val='';
 				<td class="heading" width="113">Vessel Name</td>
 				<td class="heading" width="115">Shipping Agent/<br>
 				  Forwarding</td>
-				<td class="heading" width="159">Proforma Inv No</td>
+				<td class="heading" width="130">Proforma Inv No</td>
 				<td class="heading" width="120">Remark</td>				
                 </tr>  
 		   </table>
@@ -236,6 +236,7 @@ $cnt=1;
 			 
 		while($c_row=mysql_fetch_array($c_res_f))
 		{
+		echo "<input type='hidden'  value='".$c_row['job']."' name='job[]' />";
  if($c_row['job']==1)
        {
 	    echo "<tr  align='center'>";
@@ -250,7 +251,7 @@ $cnt=1;
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['fd']."' name='fd[]'  style='text-decoration:line-through;'/>";
 		echo "</td>";     
 		echo "<td>";
-		echo "<input type='text'class='des_r_numt'  value='".$c_row['grade']."' name='grade[]'  style='text-decoration:line-through;' />";
+		echo "<input type='text'class='des_r_grd'  value='".$c_row['grade']."' name='grade[]'  style='text-decoration:line-through;' />";
 		echo "</td>";
 		echo "<td>";
 		echo "<input type='text' class='des_r_numt' value='".$c_row['qnt']."' name='qnt[]'  style='text-decoration:line-through;' />";
@@ -296,7 +297,7 @@ $cnt=1;
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['fd']."' name='fd[]'/>";
 		echo "</td>";     
 		echo "<td>";
-		echo "<input type='text'class='des_r_numt'  value='".$c_row['grade']."' name='grade[]' />";
+		echo "<input type='text'class='des_r_grd'  value='".$c_row['grade']."' name='grade[]' />";
 		echo "</td>";
 		echo "<td>";
 		echo "<input type='text' class='des_r_numt' value='".$c_row['qnt']."' name='qnt[]' />";
@@ -382,7 +383,7 @@ $cnt=1;
  
  </div>
 </div>                   
- <table width="900px;">
+ <table width="1100px;">
 <tr >
                
                 <td class="heading" width="90">Customer </td>
@@ -393,33 +394,34 @@ $cnt=1;
                 <td class="heading" width="70">Invoice No</td>
 				<td class="heading"width="80">Amount(USD)</td>
 
-				<td class="heading"colspan="2" width="100">Payment Received(USD)</td>
+				<td class="heading"colspan="2" width="150">Payment Received(USD)</td>
+				<td class="heading">Remark</td>
 </tr>
 <?php
  
- $qry="select * from client_po c ,sub_po s where c.po_id=s.po_id  AND c.c_indent_of='".$cmpnm['comp_name']."'  order by S.payment_due  DESC ";
+ $qry="select * from client_po c ,sub_po s where c.po_id=s.po_id  AND c.c_indent_of='".$cmpnm['comp_name']."'  order by S.payment_recieve  DESC ";
 $res=mysql_query($qry);
 $row=1;$rcv=1;
 while($c_row=mysql_fetch_array($res))
 {
 $received = str_replace('/', '-', $c_row['payment_recieve']);
 $due = str_replace('/', '-', $c_row['payment_due']);
-
- 	  if($c_row['job']==1)
-        echo "<tr  align='center' style='text-decoration:line-through'>";
-	else
+if($c_row['job']!=1)        
+{
+if($received!='' && $rcv>3)
+{}
+else{ 	  		
 	  echo "<tr class='pagit'>";
-  if($row==1){
-       echo "<td >";
-		echo $c_row['c_indent_of'];
-		echo "</td>"; 		
-		}
- else{
-		 echo "<td >";
-		
-		echo "</td>"; 		
-		
- }
+  			if($row==1){
+				   echo "<td >";
+					echo $c_row['c_indent_of'];
+					echo "</td>"; 		
+					}
+			 else{
+					 echo "<td>";
+					echo "</td>"; 		
+			 	}
+			
      	echo "<td>";
 		echo $c_row['etd'];
 		echo "</td>";     
@@ -446,10 +448,13 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "<td bgcolor='red' >";
 		echo $c_row['pay_amt'];
 		echo "</td>";
+		echo "<td>";		
+		echo "<input type='text' class='des_r_pdf' name='remarkt[]'/>";
+		echo "</td>";
 	   }
 	   else{
 	   		
-	   if(strtotime($received)!='' && $rcv <= 2)
+	   if(strtotime($received)!='' )
 	   {
 	   
 	   echo "<td bgcolor='green'>";
@@ -466,6 +471,9 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "</td>";
 		echo "<td  bgcolor='green' >";
 		echo 'USD'.$c_row['pay_amt'];
+		echo "</td>";
+		echo "<td>";		
+		echo "<input type='text' class='des_r_pdf' name='remarkt[]'/>";
 		echo "</td>";
 		++$rcv;
 	   }
@@ -486,12 +494,16 @@ $due = str_replace('/', '-', $c_row['payment_due']);
 		echo "<td >";
 		echo $c_row['pay_amt'];
 		echo "</td>";
+		echo "<td>";		
+		echo "<input type='text' class='des_r_pdf' name='remarkt[]'/>";
+		echo "</td>";
 		echo "</tr>";
 		
 		}
 		}++$row;
-}
- 
+} // end of while loop
+ } //end of recieve date
+ } //end of job cheking
 ?>
   
 </table>
