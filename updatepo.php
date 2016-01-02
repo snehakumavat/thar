@@ -27,9 +27,9 @@ include('converter.php');
 	 
 	
 	$a=$_POST['qnt'];
-	echo $b = count($a);
+	 $b = count($a);
  
-	echo $delete="delete from sub_po where po_id='$c_up'";
+	 $delete="delete from sub_po where po_id='$c_up'";
 	  
 	mysql_query($delete);
 	
@@ -49,8 +49,8 @@ include('converter.php');
 		$q_p=$_POST['pay'][$i];
 	//	$total=10;
 			
-	 $quo="INSERT INTO `sub_po`(`po_id`,`grade`, `qnt`, `unt_pr`, `c_note`,`tot_val`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$c_up."','".$q_g."','".$q_q."','".$q_r."','".$q_cd."','".$q_a."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
-	  $quo_res=mysql_query($quo);	
+	// $quo="INSERT INTO `sub_po`(`po_id`,`grade`, `qnt`, `unt_pr`, `c_note`,`tot_val`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$c_up."','".$q_g."','".$q_q."','".$q_r."','".$q_cd."','".$q_a."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
+	  //$quo_res=mysql_query($quo);	
 	
 	}
 	
@@ -58,10 +58,12 @@ include('converter.php');
 	if($ans)
 	{
 	header("location:po_doc.php?id=".$c_up);
+   echo '<script type="text/javascript"> window.open("viewpo.php","_self"); </script>';
 	}
 	else
 	{
 		header("location:updatepo.php?po_id=".$c_up);
+		
 	}
 		
 	}
