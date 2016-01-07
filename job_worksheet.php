@@ -34,8 +34,8 @@ else
   <link rel="stylesheet" type="text/css" href="dist/tablefilter/style/tablefilter.css" />
 <style type="text/css">
     body{
-        font-family: Helvetica, arial, nimbussansl, liberationsans, freesans,
-            clean, sans-serif;
+        font-family:"Times New Roman", Times, serif ;
+			font-size:1px;
         padding: 0 1em;
     }
 	 
@@ -103,6 +103,7 @@ else
 		<th align="center">QTY.</th>	
 		<th align="center">FCL</th>
 		<th align="center">Tentatively Date</th>
+		<th align="center">Act Dep. Date</th>
 		<th align="center">ETD</th>
 		<th align="center">ETA</th>
 		<th align="center">SHIPPING LINE</th>
@@ -129,7 +130,8 @@ else
 		{
 		$received = str_replace('/', '-', $c_row['payment_recieve']);
 		$due = str_replace('/', '-', $c_row['payment_due']);
-		$etd=str_replace('/', '-', $c_row['etd']);
+		$add=str_replace('/', '-', $c_row['etd']);
+		$etd=str_replace('/', '-', $c_row['etd_old']);
 		$eta=str_replace('/', '-', $c_row['eta']);
        if($c_row['job']==1)
         echo "<tr  align='center' style='height:10px; text-decoration:line-through'>";
@@ -145,6 +147,23 @@ else
 		echo $c_row['fd'];
 		echo "</td>";     
 		echo "<td>";
+		if($c_row['merge']==1)
+		{
+		  $rto="select group_concat(m_qnt SEPARATOR  '&')'txt', group_concat(m_grade separator '&')'grd' from  sub_po_merge where sub_po_id='".$c_row['sub_po_id']."' group by sub_po_id";
+		$query=mysql_query($rto);
+		$rd=mysql_fetch_array($query);
+		
+		$grade=explode('ZANCARB',$rd['grd']);
+		echo $grade[1].$grade[2];
+		echo "</td>";
+		echo "<td>";
+				if(!empty($rd['txt']))
+
+		echo $rd['txt'];
+		echo "</td>";
+		}
+		else
+		{
 		$grade=explode('ZANCARB',$c_row['grade']);
 		echo $grade[1];
 		echo "</td>";
@@ -153,6 +172,7 @@ else
 
 		echo $c_row['qnt'];
 		echo "</td>";
+		}
 		echo "<td>";
 		echo $c_row['fcl'];
 		echo "</td>"; 
@@ -160,13 +180,18 @@ else
 		echo $c_row['t_s_date'];
 		echo "</td>";
 		echo "<td>";
-		if(!strtotime($etd) == '')
-			{	echo $c_row['etd'];
+		if(!($at=strtotime($edd)) == '')
+			{	echo date('d/m/Y',$at);
 			}	
 		echo "</td>";
 		echo "<td>";
-		if (!strtotime($eta) == '')		
-			{	echo $c_row['eta'];
+		if(!($dt=strtotime($etd)) == '')
+			{	echo date('d/m/Y',$dt);
+			}	
+		echo "</td>";
+		echo "<td>";
+		if (!($et=strtotime($eta)) == '')		
+			{	echo date('d/m/Y',$et);
 			}	
 		echo "</td>";
 		echo "<td>";
@@ -182,10 +207,23 @@ else
 		echo "<td>";
 		echo $c_row['pi_no'];
 		echo "</td>";
+		if($c_row['merge']==1)
+		{
+		  $rto="select group_concat(m_price SEPARATOR  '&')'txt'  from  sub_po_merge where sub_po_id='".$c_row['sub_po_id']."' group by sub_po_id";
+		$query=mysql_query($rto);
+		$rd=mysql_fetch_array($query);
+		echo "<td>";
+				if(!empty($rd['txt']))
+		echo $rd['txt'];
+		echo "</td>";
+		}
+		else
+		{
 		echo "<td>";
 				if(!empty($c_row['unt_pr']))
 		echo $c_row['unt_pr'];
 		echo "</td>";
+		}
 		echo "<td>";
 		if(!empty($c_row['tot_val']))		
 		echo $c_row['tot_val'];
@@ -200,13 +238,15 @@ else
 		echo $c_row['dhl_awb_no'];
 		echo "</td>";
 		echo "<td>";
-		if(!strtotime($due) == '')
-		{		echo $c_row['payment_due'];
+		if(!($pd=strtotime($due)) == '')
+		{		
+			echo date('d/m/Y',$pd);				
 		}		
 		echo "</td>";
 		echo "<td>";
-		 if(!strtotime($received) == '')
-			{	echo $c_row['payment_recieve'];	
+		 if(!($pr=strtotime($received)) == '')
+			{	
+			echo date('d/m/Y',$pr);	
 			}	
 		echo "</td>";
 		echo "<td>";

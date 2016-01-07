@@ -181,21 +181,52 @@ while($row_d=mysql_fetch_array($res_detail))
 	echo "<td>";
 	echo $count;
 	echo "</td>";
-	echo "<td>";
-	echo $row_d['grade'];
-	echo "</td>";
-	echo "<td>";
-	echo $row_d['qnt'];
-	echo "</td>";
-	echo "<td>";
-	echo $row_d['unt_pr'];
-	echo "</td>";
-	echo "<td>";
-	echo $row_d['c_note'];
-	echo "</td>";
-	echo "<td>";
-	echo $row_d['tot_val'];
-	echo "</td>";
+	if($row_d['merge']==1)
+	  {
+	  echo "<td colspan=5>";
+	  echo "<table>";
+ 	   $rd="select * from sub_po_merge where sub_po_id='".$row_d['sub_po_id']."'";
+	   $select=mysql_query($rd);
+	   while($rd=mysql_fetch_array($select))
+	     {
+		    echo "<tr>";
+		 	echo "<td width='80px;'>";
+			echo $rd['m_grade'];
+			echo "</td>";
+			echo "<td width='50px;'>";
+			echo $rd['m_qnt'];
+			echo "</td>";
+			echo "<td width='50px;' >";
+			echo $rd['m_price'];
+			echo "</td>";
+			echo "<td width='50px;'>";
+			echo $rd['m_crd_not'];
+			echo "</td>";
+			echo "<td width='50px;'>";
+			echo $rd['m_tot'];
+			echo "</td>";
+			echo "</tr>";
+		 }
+		 echo "</table>";
+	  }
+	  else
+	  {
+			echo "<td>";
+			echo $row_d['grade'];
+			echo "</td>";
+			echo "<td>";
+			echo $row_d['qnt'];
+			echo "</td>";
+			echo "<td>";
+			echo $row_d['unt_pr'];
+			echo "</td>";
+			echo "<td>";
+			echo $row_d['c_note'];
+			echo "</td>";
+			echo "<td>";
+			echo $row_d['tot_val'];
+			echo "</td>";
+		}
 	echo "<td>";
 	echo $row_d['fcl'];
 	echo "</td>";
@@ -249,15 +280,15 @@ while($row_d=mysql_fetch_array($res_detail))
 
 </table>
 <br> 
-<p style="text-align: left; width:49%; display: inline-block;"><font size="2">Verified By<br>&nbsp;&nbsp; DT001 </p>
-<p style="text-align: right; width:40%;  display: inline-block;"><font size="2">Approved By<br><font style="margin-right:20px;"> NC007</p>
+<p style="text-align: left; width:49%; display: inline-block;"><font size="2">Verified By<br>&nbsp;&nbsp; DT001</font> </p>
+<p style="text-align: right; width:40%;  display: inline-block;"><font size="2">Approved By<br><font style="margin-right:20px;"> NC007</font> </font></p>
  
 
 </div>
 </font>
 <br><br>
 </div>
-</font>
+
 
 </body>
 </html>

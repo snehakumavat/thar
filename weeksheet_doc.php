@@ -130,7 +130,7 @@ border-right: 1px solid #FFFFFF;
  
 </head>
 
-<body>
+<body style=" font-size:11px;">
 
  <br>
 <br>
@@ -153,11 +153,11 @@ border-right: 1px solid #FFFFFF;
 <div class="description">
 <table class="report">
 <tr bgcolor="#33CCFF">
-<td width="10">No</td>
-               
+
+				<td width="10">No</td>
                 <td width="90">Customer Name</td>
                 <td width="80">Final Destination</td>
-                <td width="40">Product  </td>
+                <td width="60">Product  </td>
                 <td width="40"> QTY.</td>
                 <td width="70">Terms</td>
 				<td width="20">FCL</td>
@@ -169,6 +169,12 @@ border-right: 1px solid #FFFFFF;
 				<td width="150">Remark</td>
 </tr>
  <?php
+ if($res==0)
+ {
+ echo "<h3 align='center' style='color:#FF0000;' >No New Shipments</h3>";
+ }
+ else
+ {
 for($c=0; $c<$res;$c++)
 {
 $count+=1;
@@ -267,13 +273,16 @@ else
 
 }
 }
- 
+ }
 ?> 
   
   
 </table >
 </div>
-
+<br>
+<br>
+<br>
+<div style="color:#FF0000; font:'Times New Roman', Times, serif; font-size:12px;">* KINDLY REFFER BELOW PAGE FOR ACCOUNTS AND OUTSTANDING </div>
 <div style="page-break-after:always;"></div>
 <div>PETROTECH GROUP<BR>
 List of Outstanding -<?php echo date('d/m/Y');?>

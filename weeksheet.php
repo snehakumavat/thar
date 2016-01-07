@@ -232,12 +232,17 @@ $cnt=1;
     for($i=0; $i < $nmonth; $i++)
     {
      $c_qry_f="select * from client_po c ,sub_po s where c.po_id=s.po_id  AND c.c_indent_of='".$cmpnm['comp_name']."' AND ship_month='".$month[$i]."'  order by c.po_id";
-		$c_res_f=mysql_query($c_qry_f); 
-			 
+		$c_res_f=mysql_query($c_qry_f);
+		 
+		if (mysql_num_rows($c_res_f) > 0)   // This Loop For testing month result return empty or not
+			{	 
 		while($c_row=mysql_fetch_array($c_res_f))
 		{
+		$etd=str_replace('/', '-', $c_row['etd_old']);
+		$eta=str_replace('/', '-', $c_row['eta']);
+		
 		echo "<input type='hidden'  value='".$c_row['job']."' name='job[]' />";
- if($c_row['job']==1)
+	 if($c_row['job']==1) // check if any job is cancelled or not
        {
 	    echo "<tr  align='center'>";
 		echo "<td style='white-space:nowrap;'> <input type='checkbox' name='chk[]'/> </td>";
@@ -263,10 +268,12 @@ $cnt=1;
 		echo "<input type='text' class='des_r_num' value='".$c_row['fcl']."' name='fcl[]'  style='text-decoration:line-through;'/>";
 		echo "</td>";			
         echo "<td>";
-		echo "<input type='text' class='des_r_pdf' value='".$c_row['etd']."' name='etd[]'  style='text-decoration:line-through;'/>";
+		$ed=strtotime($etd);
+		echo "<input type='text' class='des_r_pdf' value='".date('d/m/Y',$ed)."' name='etd[]'  style='text-decoration:line-through;'/>";
 		echo "</td>";
 		echo "<td>";
-		echo "<input type='text' class='des_r_pdf' value='".$c_row['eta']."' name='eta[]'  style='text-decoration:line-through;'/>";
+		$et=strtotime($eta);
+		echo "<input type='text' class='des_r_pdf' value='".date('d/m/Y',$et)."' name='eta[]'  style='text-decoration:line-through;'/>";
 		echo "</td>";
 		echo "<td>";
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['vessel_nm']."' name='vnm[]'  style='text-decoration:line-through;'/>";
@@ -282,7 +289,7 @@ $cnt=1;
 		echo "</td>";
 		echo "</tr>";
 		++$cnt;
-		}
+		} //close job 
 		else
         {
 		echo "<tr>";		
@@ -295,13 +302,29 @@ $cnt=1;
 		echo "</td>"; 		
      	echo "<td>";
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['fd']."' name='fd[]'/>";
-		echo "</td>";     
+		echo "</td>";
+		if($c_row['merge']==1)
+		{
+		 $rto="select group_concat(m_qnt SEPARATOR  '&')'txt', group_concat(m_grade separator '&')'grd' from  sub_po_merge where sub_po_id='".$c_row['sub_po_id']."' group by sub_po_id";
+		$query=mysql_query($rto);
+		$rd=mysql_fetch_array($query);
+		echo "<td>";
+		$str=str_replace("&"," & \n",$c_row['grade']);
+ 		echo "<textarea class='des_r_grd' style='height:40px; width:100px;' name='grade[]' >$str </textarea>";
+		echo "</td>";
+		echo "<td>";
+		echo "<input type='text' class='des_r_numt' value='".$rd['txt']."' name='qnt[]' />";
+		echo "</td>";
+		}
+		else{
 		echo "<td>";
 		echo "<input type='text'class='des_r_grd'  value='".$c_row['grade']."' name='grade[]' />";
 		echo "</td>";
+		
 		echo "<td>";
 		echo "<input type='text' class='des_r_numt' value='".$c_row['qnt']."' name='qnt[]' />";
 		echo "</td>";
+		}
 		echo "<td>";
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['pay_term']."' name='payterm[]' />";
 		echo "</td>"; 
@@ -309,10 +332,12 @@ $cnt=1;
 		echo "<input type='text' class='des_r_num' value='".$c_row['fcl']."' name='fcl[]'/>";
 		echo "</td>";			
         echo "<td>";
-		echo "<input type='text' class='des_r_pdf' value='".$c_row['etd']."' name='etd[]'/>";
+		$ed=strtotime($etd);
+		echo "<input type='text' class='des_r_pdf' value='".date('d/m/Y',$ed)."' name='etd[]'/>";
 		echo "</td>";
 		echo "<td>";
-		echo "<input type='text' class='des_r_pdf' value='".$c_row['eta']."' name='eta[]'/>";
+		$ea=strtotime($eta);
+		echo "<input type='text' class='des_r_pdf' value='".date('d/m/Y',$ea)."' name='eta[]'/>";
 		echo "</td>";
 		echo "<td>";
 		echo "<input type='text' class='des_r_pdf' value='".$c_row['vessel_nm']."' name='vnm[]'/>";
@@ -328,10 +353,15 @@ $cnt=1;
 		echo "</td>";
 		echo "</tr>";
 		++$cnt;
-		} //else loop
-		}
+			} //else loop
+		} //while loop
+	}//close if loop of month testing
+	else
+	{
+	echo "<h3 align='center' style='color:#FF0000;' >No New Shipments</h3>";
+	}
 		?>
-           
+
 		  <?php
 	} // close for loop of selected month ?>
 	            </table>

@@ -114,13 +114,27 @@ include("include/database.php");
 		echo $c_row['fd'];
 		echo "</td>";     
 		echo "<td>";
-		echo $c_row['grade'];
+		$str=str_replace("&"," & <br>",$c_row['grade']);
+		echo $str;
 		echo "</td>";
+		if($c_row['merge']==1)
+		{
+		$query=mysql_query("select group_concat(m_qnt SEPARATOR  '&') 'txt' from  sub_po_merge where sub_po_id='".$c_row['sub_po_id']."' group by sub_po_id" );
+		$rd=mysql_fetch_array($query);
+		echo "<td>";
+		echo $rd['txt'];
+		echo "</td>";
+		}
+		else
+		{
 		echo "<td>";
 		echo $c_row['qnt'];
 		echo "</td>";
+		}
 		echo "<td>";
-		echo $c_row['t_s_date'];
+		$dt=str_replace('/', '-',$c_row['t_s_date']);
+		 $d=strtotime($dt);
+		echo date('d/m/Y',$d);
 		echo "</td>"; 
 		echo "<td>";
 		echo $c_row['pi_no'];

@@ -27,7 +27,7 @@ include("session.php");
 	$c_res=mysql_query($c_qry);
 	 $res=mysql_insert_id();
 	$digit="LPAD($res,3,'0')";
-	 $txt="update clients SET c_unq_code=CONCAT('PET/ZAN/',$digit) where c_id='$res'";
+	 $txt="update clients SET c_unq_code=CONCAT('PT/ZAN/',$digit) where c_id='$res'";
 	$res1=mysql_query($txt);
 	if($res1)
 	{

@@ -62,7 +62,7 @@ $(document).ready(function()
     * you can replace .change with .blur
     */
     $('#etd').change(UpdateInfo);
-    $('#eta').change(UpdateInfo);
+    $('#eta').change(Updatedata);
 	$('#prd').change(asignformula);
 	
 
@@ -88,26 +88,38 @@ function UpdateInfo()
      var etd = $('#etd').val();
 	 var eta = $('#eta').val();
      var terms = $('#terms').val();
+	if(etd=='')
+	{
+	 $('#pdd').val('');
+	}
+	else
+	{
 	
-	 if(terms == 'DP AT Sight')
-	 {
-
-     $('#pdd').val(eta);
-	 }
-	 else if(terms == 'TT 100% ADVANCE' || terms == 'AGAINST DOCUMENT')
+	  if(terms == 'TT 100% ADVANCE' || terms == 'AGAINST DOCUMENT')
 	  {
      $('#pdd').val(etd);
 	 }
 	 else
-	 {	
+	   {	
 	  var num = parseInt($('#terms').val().match(/\d+/)[0], 10);
 	 var dmy = etd.split("/");
 var joindate = new Date(parseInt(dmy[2], 10),parseInt(dmy[1], 10) - 1,parseInt(dmy[0], 10));
 joindate.setDate(joindate.getDate() + num);
      $('#pdd').val(("0" + joindate.getDate()).slice(-2) + "/" +("0" + (joindate.getMonth() + 1)).slice(-2) + "/" + joindate.getFullYear());
+	   }
+	 
 	 }
-   }
-  
+}
+   
+function Updatedata()
+{
+	 var eta = $('#eta').val();
+     var terms = $('#terms').val();
+    if(eta !='' && terms == 'DP AT Sight')
+	 {
+     $('#pdd').val(eta);
+	 }
+ } 
 </script>
 </head>
 

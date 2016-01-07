@@ -1,4 +1,5 @@
 <?php
+ob_start();
 error_reporting(0);
 include("session.php");
 include('converter.php');
@@ -26,16 +27,79 @@ include('converter.php');
 	$ans=mysql_query($result);
 	 
 	
-	$a=$_POST['qnt'];
-	 $b = count($a);
+	$a=$_POST['grade'];
+	 echo $b = count($a);
  
-	 $delete="delete from sub_po where po_id='$c_up'";
-	  
-	mysql_query($delete);
 	
+	$cnt_id=0;
 	for($i=1; $i<$b; $i++)
 	{
 		//$id=$_REQUEST['i_id'];
+		echo '<br>'. $chk=$_POST['chk'][$i];
+		echo '<br>'. $q_g=$_POST['grade'][$i];		
+		echo '<br>'.$q_q=$_POST['qnt'][$i];		
+		$q_r=$_POST['r'][$i];
+		$q_cd=$_POST['crd_nt'][$i];
+		$q_a=$_POST['value'][$i];
+		$q_d=$_POST['t_d'][$i];
+		$q_s=$_POST['ship'][$i];
+		$q_pd=$_POST['pod'][$i];
+		$fcl=$_POST['fcl'][$i];
+		$q_fd=$_POST['fd'][$i];
+		$q_p=$_POST['pay'][$i];
+	//	$total=10;
+	if($chk == 'yes')
+	{
+	 $dupesql = "SELECT sub_po_id FROM sub_po where (po_id = '$c_up' AND merge='1' AND fcl = '$fcl' AND t_s_date = '$q_d' AND ship_term = '$q_s' AND pod='$q_pd' AND fd ='$q_fd' AND pay_term = '$q_p')";
+$dupa = mysql_query($dupesql);
+$rd=mysql_fetch_array($dupa);
+
+  $dupmerge="select sub_po_id from sub_po_merge where( `sub_po_id`='".$rd['sub_po_id']."' AND `m_grade`='$q_g' AND `m_qnt`='$q_q' AND `m_crd_not`='$q_cd' AND `m_price`='$q_r' AND `m_tot`='$q_a')";
+ $exe=mysql_query($dupmerge);
+ 
+ $row2=mysql_num_rows($exe);
+$row1=mysql_num_rows($dupa);
+if($row1==$row2)
+   $row=1;
+ else
+ $row=0;  
+	
+	}
+	else
+	{
+	 $dupesql = "SELECT sub_po_id FROM sub_po where (po_id = '$c_up' AND grade = '$q_g' AND qnt = '$q_q' AND unt_pr ='$q_r' AND c_note = '$q_cd' AND tot_val = '$q_a' AND fcl = '$fcl' AND t_s_date = '$q_d' AND ship_term = '$q_s' AND pod='$q_pd' AND fd ='$q_fd' AND pay_term = '$q_p')";
+$duperaw = mysql_query($dupesql);
+$row=mysql_num_rows($duperaw);
+	}
+if($row==1)
+		{
+		++$cnt_id;
+		}
+     }//for loop
+	 			
+	$id_tot=mysql_query("select * from sub_po where po_id='$c_up' AND merge='' ");	
+	$query=mysql_query("select * from sub_po_merge where sub_po_id in(select sub_po_id from sub_po where merge= 1 AND po_id='$c_up')");
+	 $tot1=mysql_num_rows($id_tot);
+	  $tot2=mysql_num_rows($query);
+	 echo '<br>'.$tot=$tot1+$tot2;
+	 echo'<br>'.$cnt_id;	
+	 
+	if($cnt_id!=$tot)
+	{
+	 $txt="delete from sub_po_merge where sub_po_id in(select sub_po_id from sub_po where merge= 1 AND po_id=$c_up)";
+	  
+	$m_del=mysql_query($txt);
+	
+	  $delete="delete from sub_po where po_id='$c_up'";
+	 mysql_query($delete);
+	 
+	  $qu=1;
+	  
+	   
+	for($i=1; $i<$b; $i++)
+	{
+		//$id=$_REQUEST['i_id'];
+		$chk=$_POST['chk'][$i];
 		$q_g=$_POST['grade'][$i];		
 		$q_q=$_POST['qnt'][$i];		
 		$q_r=$_POST['r'][$i];
@@ -47,18 +111,41 @@ include('converter.php');
 		$fcl=$_POST['fcl'][$i];
 		$q_fd=$_POST['fd'][$i];
 		$q_p=$_POST['pay'][$i];
-	//	$total=10;
 			
-	// $quo="INSERT INTO `sub_po`(`po_id`,`grade`, `qnt`, `unt_pr`, `c_note`,`tot_val`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$c_up."','".$q_g."','".$q_q."','".$q_r."','".$q_cd."','".$q_a."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
-	  //$quo_res=mysql_query($quo);	
-	
+			if($chk=='yes')
+		  {
+				  if($qu==1)
+				  {
+				echo   $quo="INSERT INTO `sub_po`(`po_id`,`merge`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$c_up."','".$qu."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
+				   mysql_query($quo);
+				   ++$qu;
+				   $sub_po_id=mysql_insert_id();
+				   }
+echo 		  $new_query="insert into sub_po_merge(`sub_po_id`,`m_grade`,`m_qnt`,`m_crd_not`,`m_price`,`m_tot`) values('".$sub_po_id."','".$q_g."','".$q_q."','".$q_cd."','".$q_r."','".$q_a."')";
+		  $resul=mysql_query($new_query);
+		  } //close chk if loop
+		  
+		  else
+		  {		
+	 echo $quo="INSERT INTO `sub_po`(`po_id`,`grade`, `qnt`, `unt_pr`, `c_note`,`tot_val`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$c_up."','".$q_g."','".$q_q."','".$q_r."','".$q_cd."','".$q_a."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
+		 $quo_res=mysql_query($quo);	
+			}
+			
 	}
 	
-	//exit();
+	if($sub_po_id!='')
+	{
+	$merge="UPDATE sub_po o 
+INNER JOIN( SELECT sub_po_id, group_concat( `m_grade` separator  '&') 'grnd' , SUM(`m_qnt`) 'qnt',SUM(`m_crd_not`) 'cnote',SUM(`m_price`) 'pric',SUM(`m_tot`) 'tot'
+   FROM sub_po_merge where sub_po_id=$sub_po_id GROUP BY  sub_po_id) i ON o.sub_po_id = i.sub_po_id SET o.grade=i.grnd, o.qnt=i.qnt,o.unt_pr=i.pric,o.c_note = i.cnote,o.tot_val=i.tot where o.sub_po_id=$sub_po_id";
+    $res=mysql_query($merge);
+	}
+}	
+	
 	if($ans)
 	{
 	header("location:po_doc.php?id=".$c_up);
-   echo '<script type="text/javascript"> window.open("viewpo.php","_self"); </script>';
+ 
 	}
 	else
 	{
@@ -240,12 +327,12 @@ $val='';
 			 <tr>
               <td class="l_form">Address:-</td>
          <td>
-         <textarea id="addr" class="q_add"  name="addr" tabindex=" " readonly> <?php echo $cmpnm[c_add]; ?></textarea></td>
+         <textarea id="addr" class="q_add"  name="addr" tabindex=" " readonly> <?php echo $cmpnm['c_add']; ?></textarea></td>
             </tr>
             <tr>
               <td class="l_form">Customer Id:-</td>
          <td>
-         <input type='text' id="custid" class="q_in"  name="custid" readonly=""  value="<?php echo $cmpnm[c_id]; ?>" tabindex=""/></td>
+         <input type='text' id="custid" class="q_in"  name="custid" readonly=""  value="<?php echo $cmpnm['c_id']; ?>" tabindex=""/></td>
             </tr>         
 			<tr>
                    <td class="l_form">PT Ref No:</td>
@@ -299,8 +386,9 @@ $val='';
           </table>
                <!-- <span style="color:#00f;font-size:20px;font-weight:bold;cursor:pointer;" onClick="add_phone_field()">[+]</span>-->
                <table class="des" id="dataTable">
+			   <!--hiddent tr -->
 			       <tr style="display:none;">
-                <td style="white-space:nowrap;" width="10"><input type="checkbox" name="chk[]"/></td>
+                <td style="white-space:nowrap;" width="10"><input type="checkbox" name="chk[]" checked="checked" /></td>
                  
                 <td>
                  <select name="grade[]" class="des_q" id="" style="width:60px;" >
@@ -353,17 +441,92 @@ $val='';
 				 <option value="LC 60 Days">LC 60 Days</option>
 				 <option value="TT 100% ADVANCE">TT 100% ADVANCE</option>
 				 <option value="AGAINST DOCUMENT">AGAINST DOCUMENT</option>
+				  <option value="other">Other</option>
 				 </select>
-                </td>              
+                </td>  
+				 <td><input class="des_r" type="text" name="pay2[]" id="pay2" style="width:120px; display:none;" value="" tabindex="13" /></td>            
                 </tr>    
 <?php
  $rd="select * from sub_po where po_id='$c_up'";
 $rd_exc=mysql_query($rd);
 while($sub_po=mysql_fetch_array($rd_exc))
 {
+if($sub_po['merge']==1)
+	  {
+	
+ 	   $rd="select * from sub_po_merge where sub_po_id='".$sub_po['sub_po_id']."'";
+	   $select=mysql_query($rd);
+	   while($rd=mysql_fetch_array($select))
+	   {
 ?>
                           
-				<tr >
+				<tr>
+                <td style="white-space:nowrap;" width="10"><input type="checkbox" name="chk[]" value="yes" checked="checked" /></td>
+                 
+                <td width="80px;" >
+                 <select name="grade[]" class="des_q" id="" tabindex="3" style="width:60px;">
+				 <option value="No Grade">Grade</option>
+				 <option value="ZANCARB 1T" <?php if($rd['m_grade']=="ZANCARB 1T") echo 'selected="selected"'; ?>>1T</option>
+				 <option value="ZANCARB 2T"  <?php if($rd['m_grade']=="ZANCARB 2T") echo 'selected="selected"'; ?>>2T</option>
+				 <option value="ZANCARB 2TS"  <?php if($rd['m_grade']=="ZANCARB 2TS") echo 'selected="selected"'; ?>>2TS</option>
+				 <option value="ZANCARB ZB1"  <?php if($rd['m_grade']=="ZANCARB ZB1") echo 'selected="selected"'; ?>>ZB1</option>								 
+				 <option value="ZANCARB ZB2"  <?php if($rd['m_grade']=="ZANCARB ZB2") echo 'selected="selected"'; ?>>ZB2</option>
+				 </select>
+                </td>     
+				<td width="">
+                 <input class="des_r" type="text" name="qnt[]" id="" value="<?php echo $rd['m_qnt'];?>" tabindex="4" style="width:60px;"> 
+                </td>
+				<td width="" >
+                 <input class="des_r" type="text" name="r[]" id="r" value="<?php echo $rd['m_price'];?>" tabindex="5" onKeyUp="getValues()" style="width:80px;" > 
+                </td>
+                <td width="" >
+                 <input class="des_r" type="text" name="crd_nt[]" id="0" value="<?php echo $rd['m_crd_not'];?>" tabindex="6" style="width:100px;" > 
+                </td>
+                <td width="">
+                 <input class="des_r" type="text" name="value[]" id="value" value="<?php echo $rd['m_tot'];?>" style="width:80px;" readonly> 
+                </td>
+				<td width="">
+                 <input class="des_r" type="text" name="fcl[]" id="fcl" value="<?php echo $sub_po['fcl'];?>" style="width:40px;" tabindex="7"> 
+                </td>
+                   
+          <td width=""><input id="t_d" class="des_sr" type="text" name="t_d[]" value="<?php echo $sub_po['t_s_date'];?>"style="width:120px;" tabindex="8"/></td>
+              
+				 <td width="" >
+                 <select name="ship[]" class="des_q" id="" tabindex="9" style="width:120px;">
+				 <option value="No Shipment_term">Select</option>
+				 <option value="FOB"  <?php if($sub_po['ship_term']=="FOB") echo 'selected="selected"'; ?>>FOB</option>
+				 <option value="CIF"  <?php if($sub_po['ship_term']=="CIF") echo 'selected="selected"'; ?>>CIF</option>
+				 </select>
+                </td>
+				<td width="">
+				<input class="des_r" type="text" name="pod[]" id="pod[]" value="<?php echo $sub_po['pod'];?>" style="width:120px;" tabindex="10"></td>
+				<td width="">
+				<input class="des_r" type="text" name="fd[]" id="fd[] "value="<?php echo $sub_po['fd'];?>" style="width:120px;" tabindex="11"></td>
+                <td width="" >
+             <select name="pay[]" class="des_q" id="" style="width:130px;" tabindex="12">
+				 <option value="No Payment_term">Select</option>
+				 <option value="DP AT Sight"  <?php if($sub_po['pay_term']=="DP AT Sight") echo 'selected="selected"'; ?> >DP AT Sight</option>
+				 <option value="DA 25 Days" <?php if($sub_po['pay_term']=="DA 25 Days") echo 'selected="selected"'; ?>>DA 25 Days</option>
+				 <option value="DA 30 Days"<?php if($sub_po['pay_term']=="DA 30 Days") echo 'selected="selected"'; ?>>DA 30 Days</option>
+				 <option value="DA 45 Days"<?php if($sub_po['pay_term']=="DA 45 Days") echo 'selected="selected"'; ?>>DA 45 Days</option>								 
+				 <option value="DA 60 Days"<?php if($sub_po['pay_term']=="DA 60 Days") echo 'selected="selected"'; ?>>DA 60 Days</option>
+				 <option value="DA 90 Days"<?php if($sub_po['pay_term']=="DA 90 Days") echo 'selected="selected"'; ?>>DA 90 Days</option>
+				 <option value="LC 30 Days"<?php if($sub_po['pay_term']=="LC 30 Days") echo 'selected="selected"'; ?>>LC 30 Days</option>
+				 <option value="LC 45 Days"<?php if($sub_po['pay_term']=="LC 45 Days") echo 'selected="selected"'; ?>>LC 45 Days</option>
+				 <option value="LC 60 Days"<?php if($sub_po['pay_term']=="LC 60 Days") echo 'selected="selected"'; ?>>LC 60 Days</option>
+				 <option value="TT 100% ADVANCE" <?php if($sub_po['pay_term']=="TT 100% ADVANCE") echo 'selected="selected"'; ?>>TT 100% ADVANCE</option>
+				 <option value="AGAINST DOCUMENT" <?php if($sub_po['pay_term']=="AGAINST DOCUMENT") echo 'selected="selected"'; ?>>AGAINST DOCUMENT</option>
+				 <option value="other">Other</option>
+				 </select>
+                </td> 
+				 <td><input class="des_r" type="text" name="pay2[]" id="pay2" style="width:120px; display:none;" value="" tabindex="13" /></td>
+	<?php
+	}
+	}
+	else
+	{
+	?>
+	<tr>
                 <td style="white-space:nowrap;" width="10"><input type="checkbox" name="chk[]"/></td>
                  
                 <td width="80px;" >
@@ -387,7 +550,7 @@ while($sub_po=mysql_fetch_array($rd_exc))
                 </td>
                 <td width="">
                  <input class="des_r" type="text" name="value[]" id="value" value="<?php echo $sub_po['tot_val'];?>" style="width:80px;" readonly> 
-                </td>
+                </td>							
 				 <td width="">
                  <input class="des_r" type="text" name="fcl[]" id="fcl" value="<?php echo $sub_po['fcl'];?>" style="width:40px;" tabindex="7"> 
                 </td>
@@ -401,10 +564,13 @@ while($sub_po=mysql_fetch_array($rd_exc))
 				 <option value="CIF"  <?php if($sub_po['ship_term']=="CIF") echo 'selected="selected"'; ?>>CIF</option>
 				 </select>
                 </td>
-				<td width=""><input class="des_r" type="text" name="pod[]" id="pod[]" value="<?php echo $sub_po['pod'];?>" style="width:120px;" tabindex="10"></td>
-				<td width=""><input class="des_r" type="text" name="fd[]" id="fd[]"value= <?php echo $sub_po['fd'];?> style="width:120px;" tabindex="11"></td>
+				<td width="">
+				<input class="des_r" type="text" name="pod[]" id="pod[]" value="<?php echo $sub_po['pod'];?>" style="width:120px;" tabindex="10"></td>
+				<td width="">
+				<input class="des_r" type="text" name="fd[]" id="fd[] "value="<?php echo $sub_po['fd'];?>" style="width:120px;" tabindex="11"></td>
                 <td width="" >
-             <select name="pay[]" class="des_q" id="" style="width:130px;" tabindex="12">
+				
+             <select name="pay[]" class="des_q" id="" style="width:130px;" tabindex="12" >
 				 <option value="No Payment_term">Select</option>
 				 <option value="DP AT Sight"  <?php if($sub_po['pay_term']=="DP AT Sight") echo 'selected="selected"'; ?> >DP AT Sight</option>
 				 <option value="DA 25 Days" <?php if($sub_po['pay_term']=="DA 25 Days") echo 'selected="selected"'; ?>>DA 25 Days</option>
@@ -417,9 +583,23 @@ while($sub_po=mysql_fetch_array($rd_exc))
 				 <option value="LC 60 Days"<?php if($sub_po['pay_term']=="LC 60 Days") echo 'selected="selected"'; ?>>LC 60 Days</option>
 				 <option value="TT 100% ADVANCE" <?php if($sub_po['pay_term']=="TT 100% ADVANCE") echo 'selected="selected"'; ?>>TT 100% ADVANCE</option>
 				 <option value="AGAINST DOCUMENT" <?php if($sub_po['pay_term']=="AGAINST DOCUMENT") echo 'selected="selected"'; ?>>AGAINST DOCUMENT</option>
+				 <?php
+				 if($sub_po['pay_term']!="DP AT Sight" || $sub_po['pay_term']!="DA 25 Days" ||$sub_po['pay_term']!="DA 30 Days" || $sub_po['pay_term']!="DA 45 Days" || $sub_po['pay_term']!="DA 60 Days" || $sub_po['pay_term']!="DA 90 Days" || $sub_po['pay_term']!="LC 30 Days" || $sub_po['pay_term']!="LC 45 Days" || $sub_po['pay_term']!="LC 60 Days" || $sub_po['pay_term']!="TT 100% ADVANCE" || $sub_po['pay_term']!="AGAINST DOCUMENT")
+				 {
+				 ?>
+				 <option  value="<?php echo $sub_po['pay_term'];?>" selected="selected"> <?php echo $sub_po['pay_term'];?></option>
+				   <?php
+				 }
+				 ?>
+				  <option value="other">Other</option>
 				 </select>
                 </td> 
-				 <?php }  ?>             
+				 
+				
+				 <?php }  // close else loop
+				 
+				 	} //close while loop
+				   ?>             
                 </tr>                 
                 
           </table>               

@@ -2,7 +2,7 @@
 $server="localhost";
 $username="root";
 $password="";
-$database="tharline";
+$database="tharline2";
 
 $con=mysql_connect($server,$username,$password);
 	mysql_select_db($database,$con);

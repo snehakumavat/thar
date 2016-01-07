@@ -23,6 +23,18 @@ include("session.php");
 <script type="text/javascript" src="js/slider.js"></script>
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
+<script type="text/javascript">
+function printdiv(divName) {
+     var printContents = document.getElementById(divName).innerHTML;
+     var originalContents = document.body.innerHTML;
+
+     document.body.innerHTML = printContents;
+ 
+     window.print();
+
+     document.body.innerHTML = originalContents;
+}
+</script>
 </head>
 
 <body>
@@ -32,8 +44,9 @@ include("session.php");
 	include("header.php");
 	?><br />
 		<div class="quotation"><center>Client Details</center></div>
-        <div>
+    
         <form action="" method="post">
+		    <div id="print_area">
         <table class="q_clients">
                 <tr><td class="l_form">Client Id:</td><td class="l_form"><label><?php echo $c_row[1]; ?></label></td></tr>
                 <tr><td class="l_form">Company Name:</td><td class="l_form"><label><?php echo $c_row[2]; ?></label></td></tr>
@@ -44,8 +57,8 @@ include("session.php");
                 <tr><td class="l_form">IEC:</td><td class="l_form"><label><?php echo $c_row[c_iec]; ?></label></td></tr>
                 <tr><td class="l_form">Email Id1:</td><td class="l_form"><label><?php echo $c_row[c_email1]; ?></label></td></tr>
                 
-                </table>
-                <table class="q_clients2">
+       </table>
+       <table class="q_clients2">
 				<tr><td class="l_form">Email Id2:</td><td class="l_form"><label><?php echo $c_row[c_email2]; ?></label></td></tr>
 
                 <tr><td class="l_form">Phone No:</td><td class="l_form"><label><?php echo $c_row[c_ph]; ?></label></td></tr>
@@ -55,9 +68,10 @@ include("session.php");
                 <tr><td class="l_form">CIN No:</td><td class="l_form"><label><?php echo $c_row[c_cin]; ?></label></td></tr>               
                 <tr><td class="l_form">ECC No:</td><td class="l_form"><label><?php echo $c_row[c_ecc]; ?></label></td></tr>
 				<tr><td class="l_form">Special Note:</td><td class="l_form"><label><?php echo $c_row[c_special_note]; ?></label></td></tr>                 
-                </table>
+       </table>
+				</div>
         <div class="addclients_b">
-       
+       <input type="button" value="Print" class="formbutton" name="print" onClick="printdiv('print_area');" />
          <input name="can" class="formbutton" value="Cancel" type="submit" />
         </div>
         

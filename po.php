@@ -14,7 +14,7 @@ include('converter.php');   //convert number to words
 <?php
 	if(isset($_REQUEST['g_add']))
 	{	
-	echo '-'.$indt=$_REQUEST['cmp1'];
+	$indt=$_REQUEST['cmp1'];
 	 $add=$_REQUEST['addr'];
 	 $cid=$_REQUEST['custid'];
  	 $d1=$_REQUEST['d1'];
@@ -33,9 +33,14 @@ include('converter.php');   //convert number to words
 	$id=mysql_insert_id();
 	$a=$_POST['grade'];
 	$b = count($a);
+	$ct=count($chk);
+	$query=1;
+	
+		
 	for($i=0; $i<$b; $i++)
 	{
 		//$id=$_REQUEST['i_id'];
+		$chk=$_POST['chk'][$i];
 		$q_g=$_POST['grade'][$i];		
 		$q_q=$_POST['qnt'][$i];		
 		$q_r=$_POST['r'][$i];
@@ -48,14 +53,38 @@ include('converter.php');   //convert number to words
 		$q_p=$_POST['pay'][$i];
         $fcl=$_POST['fcl'][$i];
 	//	$total=10;
-			
+		if($q_p=='other')
+		{
+		$q_p=$_POST['pay2'][$i];
+		}
+		if($chk=='on')
+	  {
+			  if($query==1)
+			  {
+			   $quo="INSERT INTO `sub_po`(`po_id`,`merge`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$id."','".$query."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
+			   mysql_query($quo);
+			   ++$query;
+			   $sub_po_id=mysql_insert_id();
+			   }
+	  $new_query="insert into sub_po_merge(`sub_po_id`,`m_grade`,`m_qnt`,`m_crd_not`,`m_price`,`m_tot`) values('".$sub_po_id."','".$q_g."','".$q_q."','".$q_cd."','".$q_r."','".$q_a."')";
+	  $resul=mysql_query($new_query);
+	  } //close chk loop
+	  else
+	  {
   $quo="INSERT INTO `sub_po`(`po_id`,`grade`, `qnt`, `unt_pr`, `c_note`,`tot_val`,`fcl`,`t_s_date`,`ship_term`,`pod`,`fd`,`pay_term`) VALUES('".$id."','".$q_g."','".$q_q."','".$q_r."','".$q_cd."','".$q_a."','".$fcl."','".$q_d."','".$q_s."','".$q_pd."','".$q_fd."','".$q_p."')";
 	
-	 $quo_res=mysql_query($quo);	
+		$quo_res=mysql_query($quo);	
+	  }
 	
 	}
-	
-	//exit();
+	if($sub_po_id!='')
+	{
+	$merge="UPDATE sub_po o 
+INNER JOIN( SELECT sub_po_id, group_concat( `m_grade` separator  '&') 'grnd' , SUM(`m_qnt`) 'qnt',SUM(`m_crd_not`) 'cnote',SUM(`m_price`) 'pric',SUM(`m_tot`) 'tot'
+   FROM sub_po_merge where sub_po_id=$sub_po_id GROUP BY  sub_po_id) i ON o.sub_po_id = i.sub_po_id SET o.grade=i.grnd, o.qnt=i.qnt,o.unt_pr=i.pric,o.c_note = i.cnote,o.tot_val=i.tot where o.sub_po_id=$sub_po_id";
+    $res=mysql_query($merge);
+	}
+
 	if($ans)
 	{
 	header("location:po_doc.php?id=".$id);
@@ -114,7 +143,7 @@ text-align:justify;
 <script type="text/javascript" src="js/superfish.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" src="toword.js"></script>
-<script type="text/javascript" src=" jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript">
 function fill(Value)
 {
@@ -251,6 +280,16 @@ function addRow(tableID) {
    getValues();
 }
    
+   function data(val)
+   {
+   if(val=='other')
+   {
+   
+  document.getElementById("pay").style.display = "none";
+  document.getElementById("pay2").style.display= "block";
+   }
+   
+   }
  </script>
 </head>
 
@@ -373,7 +412,7 @@ $query3=mysql_query("SELECT * FROM clients WHERE comp_name LIKE '%$name%'");
 				<td class="heading">Port of Discharge</td>
 				<td class="heading">Final Destination</td>
 				<td class="heading">Payment Terms</td>			
-
+	<td></td>
 				
                 </tr>
           </table>
@@ -420,8 +459,8 @@ $query3=mysql_query("SELECT * FROM clients WHERE comp_name LIKE '%$name%'");
                 </td>
 				<td><input class="des_r" type="text" name="pod[]" id="pod[]" style="width:120px;" tabindex="11" ></td>
 				<td><input class="des_r" type="text" name="fd[]" id="fd[]" style="width:120px;"tabindex="12" ></td>
-                <td >
-             <select name="pay[]" class="des_q" id="" style="width:130px;" tabindex="13" >
+                <td>
+             <select name="pay[]" class="des_q" id="pay" style="width:130px;" tabindex="13" onChange="data(this.value);" >
 				 <option value="No Payment_term">Select</option>
 				 <option value="DP AT Sight">DP AT Sight</option>
 				 <option value="DA 25 Days">DA 25 Days</option>
@@ -434,8 +473,11 @@ $query3=mysql_query("SELECT * FROM clients WHERE comp_name LIKE '%$name%'");
 				 <option value="LC 60 Days">LC 60 Days</option>
 				 <option value="TT 100% ADVANCE">TT 100% ADVANCE</option>
 				 <option value="AGAINST DOCUMENT">AGAINST DOCUMENT</option>
+				 <option value="other">Other</option>
 				 </select>
-                </td>              
+				 
+				 </td>
+				 <td style=" display:none;" id="pay2"><input class="des_r" type="text" name="pay2[]"  style="width:120px;" value="" tabindex="13" /></td>
                 </tr>                 
                 
           </table>               
